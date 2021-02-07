@@ -1,11 +1,11 @@
 import numpy as np
 import random
+from geneticAlgo import *
 
 class TSP(GA):
 
-    def createChromosome(self):
-        order = set(np.arrange(self.dimension, dtype=int))
-        route = list(random.sample(order, self.dimension))
+    def createChromosome(self,data):
+        route = list(random.sample(data, self.dimension))
         return route
     
     def findDist(node1, node2):
@@ -17,6 +17,6 @@ class TSP(GA):
             node1 = chromosome[i-1]
             node2 = chromosome[i]
             fitness = fitness + findDist(node1, node2)
-        return fitness
+        return 1/fitness
 
     

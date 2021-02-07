@@ -1,10 +1,10 @@
-from geneticAlgo import *
-from knapsack import *
-from tsp import *
-
+# from geneticAlgo import *
+# from knapsack import *
+# from tsp import *
+import random
 
 # Open input file
-infile = open('qa194.tsp', 'r')
+infile = open('question1\qa194.tsp', 'r')
 # print(infile.read())
 
 # # Read instance header
@@ -22,10 +22,13 @@ nodelist = []
 n = int(dimension)
 for i in range(0, n):
     x,y = infile.readline().strip().split()[1:]
-    nodelist.append([float(x), float(y)])
+    nodelist.append((float(x), float(y)))
 
 # Close input file
 infile.close()
 
-print(nodelist)
-print(len(nodelist))
+# print(nodelist)
+# print(len(nodelist))
+
+# print(random.sample(nodelist, 194))
+a={2:3, 9:7}
