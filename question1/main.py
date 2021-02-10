@@ -1,7 +1,6 @@
-# from geneticAlgo import *
-# from knapsack import *
-# from tsp import *
-import random
+from geneticAlgo import *
+from knapsack import *
+from tsp import *
 
 def readForTSP(path):
     # Open input file
@@ -26,8 +25,5 @@ def readForTSP(path):
     return nodelist
 
 data = readForTSP('question1\qa194.tsp')
-
-# print(random.sample(nodelist, 194))
-# a={0:7, 1:3, 2:80, 3:8}
-# b = sorted(a, key=a.get)
-# print(b)
+obj = TSP(data, 5, 2, 0.25, 2, 194, 5)
+obj.evolve()

@@ -1,7 +1,7 @@
 import numpy as np, random, operator
 
-class GA:
-    def _init_(self):
+class GA:   
+    def __init__(self, data, populationSize, children, mutationRate, iterations, dimension, totalGenerations):
         self.data = data
         self.populationSize = populationSize
         self.children = children
@@ -9,6 +9,7 @@ class GA:
         self.iterations = iterations
         self.dimension = dimension 
         self.totalGenerations = totalGenerations
+        self.population = self.initializePopultaion()
 
     def initializePopultaion(self):
         population = []
@@ -54,7 +55,7 @@ class GA:
         return child
 
     
-    def selection(self, selectType, population, n):
+    def selection(self, selectType, n):
         """
             n = number of individuals to be selected
             selectType = the name of selection scheme to be applied
@@ -62,22 +63,22 @@ class GA:
         selected = []
         if (selectType == 'BT'):
             for i in range(n):
-                selected.append(self.binaryTournament(self, population))
+                selected.append(self.binaryTournament())
         if (selectType == 'rand'):
             for i in range(n):
-                selected.append(self.random(self, population))
+                selected.append(self.random())
         if (selectType == 'truncate'):
-            selected.append(self.truncate(self, population, n))
+            return self.truncate(n)
         if (selectType == 'FPS'):
-            selected.append(self.FPS(self, population, n))
+            return self.FPS(n)
         if (selectType == 'RBS'):
-            selected.append(self.RBS(self, population, n))
+            return self.RBS(n)
         return selected
 
 
-    def binaryTournament(self, population):
-        individual1 = population[np.random.randint(0, self.populationSize)] #randomly select the first chromosome
-        individual2 = population[np.random.randint(0, self.populationSize)] #randomly select the second chromosome
+    def binaryTournament(self):
+        individual1 = self.population[np.random.randint(0, self.populationSize)] #randomly select the first chromosome
+        individual2 = self.population[np.random.randint(0, self.populationSize)] #randomly select the second chromosome
         fitness1 = self.calcFitness(individual1) #calculate fitness for the first chromosome
         fitness2 = self.calcFitness(individual2) #calculate fitness for the second chromosome
         if (fitness1 > fitness2): #return the fittest individual
@@ -85,28 +86,28 @@ class GA:
         else:
             return individual2
 
-    def truncate(self, population, n): #returns top n fittest chromosomes 
+    def truncate(self, n): #returns top n fittest chromosomes 
         fitnessResult = {}
-        for i in range(len(population)):
+        for i in range(len(self.population)):
             #calculate fitness for all the chromosomes
-            fitnessResult[i] = self.calcFitness(population[i])
+            fitnessResult[i] = self.calcFitness(self.population[i])
         #sort in descending order based on fitness
         sortedFitness = sorted(fitnessResult.items(), key = operator.itemgetter(1))
         finalResult = []
         for i in range(n):
             #select top n fittest chromosomes
-            finalResult.append(population[sortedFitness[i][0]]) 
+            finalResult.append(self.population[sortedFitness[i][0]]) 
         return finalResult
 
-    def FPS(self, population, n):
+    def FPS(self, n):
         fitnessResult = {}
         selected = []
-        for i in range(len(population)):
+        for i in range(len(self.population)):
             #calculate fitness for all the chromosomes
-            fitnessResult[i] = self.calcFitness(population[i])
+            fitnessResult[i] = self.calcFitness(self.population[i])
         fitnessSum = sum(fitnessResult.values())
         #divide each fitness value by the sum
-        for i in range(len(population)):
+        for i in range(len(self.population)):
             j = i - 1
             fitnessResult[i] = fitnessResult[i] / fitnessSum
             if (j >= 0):
@@ -120,15 +121,15 @@ class GA:
                 if value == result:
                     index=key
                     break
-            selected.append(population[index])
+            selected.append(self.population[index])
         return selected
 
-    def RBS(self, population, n):
+    def RBS(self, n):
         fitnessResult = {}
         selected = []
-        for i in range(len(population)):
+        for i in range(len(self.population)):
             #calculate fitness for all the chromosomes
-            fitnessResult[i] = self.calcFitness(population[i])
+            fitnessResult[i] = self.calcFitness(self.population[i])
         #sort in ascending order based on fitness
         sortedFitness = sorted(fitnessResult, key = fitnessResult.get) #returns the sorted list of index
         rankSum = sum(range(self.populationSize + 1))
@@ -148,22 +149,40 @@ class GA:
                 if value == result:
                     index=key
                     break
-            selected.append(population[index])
+            selected.append(self.population[index])
         return selected
             
 
-    def random(self, population):
+    def random(self):
         #randomly select the chromosome
-        return population[np.random.randint(0, self.populationSize)]
+        return self.population[np.random.randint(0, self.populationSize)]
 
     #will run steps for each generation
-    def evolve(self):
-        pass
+    def newGeneration(self):
+        offsprings = []
+        mutatedPop = []
+        for i in range(self.iterations):
+            parents = self.selection('BT', 2)
+            offsprings.append(self.crossOver(parents))
+        for i in offsprings:
+            mutatedPop.append(self.mutate(i))
+        newPopulation = self.population + mutatedPop
+        survivors = self.selection('truncate', self.populationSize)
+        print("Offsprings:", offsprings)
+        print("mutated:", mutatedPop)
+        print("newPop",newPopulation)
+        print("Survive", survivors)
+        return survivors
 
     #will run total generations
-    def geneticAlgorithm(self):
+    def evolve(self):
         for i in range(self.totalGenerations):
-            self.evolve()
+            print("Generation number:", i)
+            self.population = self.newGeneration()
+            print(self.population)
+            print(len(self.population))
+
+            
 
 
 
