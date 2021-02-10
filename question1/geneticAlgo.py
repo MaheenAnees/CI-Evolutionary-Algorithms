@@ -2,8 +2,9 @@ import numpy as np, random, operator
 
 class GA:
     def _init_(self):
+        self.data = data
         self.populationSize = populationSize
-        self.offsprings = offsprings
+        self.children = children
         self.mutationRate = mutationRate
         self.iterations = iterations
         self.dimension = dimension 
@@ -12,12 +13,12 @@ class GA:
     def initializePopultaion(self):
         population = []
         for i in range(0, self.populationSize):
-            population.append(self.createChromosome(self, data))
+            population.append(self.createChromosome())
         return population
 
     #problem specific function
     #implemented in specific problem's class
-    def createChromosome(self, data):
+    def createChromosome(self):
         pass
 
     #problem specific function
@@ -38,10 +39,41 @@ class GA:
 
 
     def crossOver(self, parents):
-        pass
+        child=[]
+        childA=[]
+        childB=[]   
+        geneA=int(random.random()* len(parents[0]))
+        geneB=int(random.random()* len(parents[0]))
+        
+        start = min(geneA,geneB)
+        end = max(geneA,geneB)
+        for i in range(start,end):
+            childA.append(parents[0][i])    
+        childB=[gene for gene in parents[1] if gene not in childA]
+        child = childA + childB
+        return child
 
+    
     def selection(self, selectType, population, n):
-        pass
+        """
+            n = number of individuals to be selected
+            selectType = the name of selection scheme to be applied
+        """
+        selected = []
+        if (selectType == 'BT'):
+            for i in range(n):
+                selected.append(self.binaryTournament(self, population))
+        if (selectType == 'rand'):
+            for i in range(n):
+                selected.append(self.random(self, population))
+        if (selectType == 'truncate'):
+            selected.append(self.truncate(self, population, n))
+        if (selectType == 'FPS'):
+            selected.append(self.FPS(self, population, n))
+        if (selectType == 'RBS'):
+            selected.append(self.RBS(self, population, n))
+        return selected
+
 
     def binaryTournament(self, population):
         individual1 = population[np.random.randint(0, self.dimension)] #randomly select the first chromosome
@@ -66,41 +98,59 @@ class GA:
             finalResult.append(population[sortedFitness[i][0]]) 
         return finalResult
 
-    def FPS(self, population):
+    def FPS(self, population, n):
         fitnessResult = {}
+        selected = []
         for i in range(len(population)):
             #calculate fitness for all the chromosomes
             fitnessResult[i] = self.calcFitness(population[i])
         fitnessSum = sum(fitnessResult.values())
         #divide each fitness value by the sum
         for i in range(len(population)):
+            j = i - 1
             fitnessResult[i] = fitnessResult[i] / fitnessSum
-        #find the cumulative fitness for each
-        for i in range(1,len(population)):
-            fitnessResult[i] += fitnessResult[i-1] 
-        #find the cumulative fitness closest to the generated random number
-        result = min(fitnessResult.values(), key=lambda x:abs(random.random()))
-        #find the chromosome index with the closest value that we found
-        for key,value in fitnessResult.items():
-            if value == result:
-                index=key
-                break
-        return population[index]
+            if (j >= 0):
+                #find the cumulative fitness for each
+                fitnessResult[i] += fitnessResult[j] 
+        for i in range(n):
+            #find the cumulative fitness closest to the generated random number
+            result = min(fitnessResult.values(), key=lambda x:abs(random.random()))
+            #find the chromosome index with the closest value that we found
+            for key,value in fitnessResult.items():
+                if value == result:
+                    index=key
+                    break
+            selected.append(population[index])
+        return selected
 
-    def RBS(self, population):
+    def RBS(self, population, n):
         fitnessResult = {}
+        selected = []
         for i in range(len(population)):
             #calculate fitness for all the chromosomes
             fitnessResult[i] = self.calcFitness(population[i])
-        #sort in ascending order based on fitness so that highest index(rank) is of the fittest indivual
-        #each tuple => first val = index of chromosome in pop , second val = fitness
-        sortedFitness = sorted(fitnessResult.items(), key = operator.itemgetter(1), reverse = False)
-        rankedResult = []
+        #sort in ascending order based on fitness
+        sortedFitness = sorted(fitnessResult, key = fitnessResult.get) #returns the sorted list of index
+        rankSum = sum(range(self.populationSize + 1))
         for i in range(len(sortedFitness)):
-            #divide each fitness by its rank
-            rankedFitness = sortedFitness[i][1]/i
-            rankedResult.append((sortedFitness[0],rankedFitness))
-        
+            j = i - 1
+            #divide each fitness by rankSum
+            rankedFitness = (i+1)/rankSum
+            fitnessResult[sortedFitness[i]] = rankedFitness
+            #find the cumulative fitness for each
+            if (j >=0):
+                fitnessResult[sortedFitness[i]] += fitnessResult[sortedFitness[j]] 
+        for i in range(n):
+            #find the cumulative fitness closest to the generated random number
+            result = min(fitnessResult.values(), key=lambda x:abs(random.random()))
+            #find the chromosome index with the closest value that we found
+            for key,value in fitnessResult.items():
+                if value == result:
+                    index=key
+                    break
+            selected.append(population[index])
+        return selected
+            
 
     def random(self, population):
         #randomly select the chromosome
@@ -112,7 +162,8 @@ class GA:
 
     #will run total generations
     def geneticAlgorithm(self):
-        pass
+        for i in range(self.totalGenerations):
+            self.evolve()
 
 
 
