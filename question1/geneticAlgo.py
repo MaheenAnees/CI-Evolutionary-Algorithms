@@ -76,8 +76,8 @@ class GA:
 
 
     def binaryTournament(self, population):
-        individual1 = population[np.random.randint(0, self.dimension)] #randomly select the first chromosome
-        individual2 = population[np.random.randint(0, self.dimension)] #randomly select the second chromosome
+        individual1 = population[np.random.randint(0, self.populationSize)] #randomly select the first chromosome
+        individual2 = population[np.random.randint(0, self.populationSize)] #randomly select the second chromosome
         fitness1 = self.calcFitness(individual1) #calculate fitness for the first chromosome
         fitness2 = self.calcFitness(individual2) #calculate fitness for the second chromosome
         if (fitness1 > fitness2): #return the fittest individual
@@ -134,7 +134,7 @@ class GA:
         rankSum = sum(range(self.populationSize + 1))
         for i in range(len(sortedFitness)):
             j = i - 1
-            #divide each fitness by rankSum
+            #divide each rank by rankSum
             rankedFitness = (i+1)/rankSum
             fitnessResult[sortedFitness[i]] = rankedFitness
             #find the cumulative fitness for each
@@ -154,7 +154,7 @@ class GA:
 
     def random(self, population):
         #randomly select the chromosome
-        return population[np.random.randint(0, self.dimension)]
+        return population[np.random.randint(0, self.populationSize)]
 
     #will run steps for each generation
     def evolve(self):
