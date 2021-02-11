@@ -92,7 +92,7 @@ class GA:
             #calculate fitness for all the chromosomes
             fitnessResult[i] = self.calcFitness(self.population[i])
         #sort in descending order based on fitness
-        sortedFitness = sorted(fitnessResult.items(), key = operator.itemgetter(1))
+        sortedFitness = sorted(fitnessResult.items(), key = operator.itemgetter(1), reverse=True)
         finalResult = []
         for i in range(n):
             #select top n fittest chromosomes
@@ -166,21 +166,36 @@ class GA:
             offsprings.append(self.crossOver(parents))
         for i in offsprings:
             mutatedPop.append(self.mutate(i))
-        newPopulation = self.population + mutatedPop
+        self.population += mutatedPop
         survivors = self.selection('truncate', self.populationSize)
-        print("Offsprings:", offsprings)
-        print("mutated:", mutatedPop)
-        print("newPop",newPopulation)
-        print("Survive", survivors)
+        # print("Offsprings:", offsprings)
+        # print("mutated:", mutatedPop)
+        # print("newPop",newPopulation)
+        # print("Survive", survivors)
         return survivors
 
     #will run total generations
     def evolve(self):
+        Initial = {}
+        for i in range(len(self.population)):
+            #calculate fitness for all the chromosomes
+            Initial[i] = self.calcFitness(self.population[i])
+        sortedIni = sorted(Initial.items(), key = operator.itemgetter(1), reverse=True)
+        ini = 1/sortedIni[0][1]
+        print("Initial", ini)
         for i in range(self.totalGenerations):
             print("Generation number:", i)
             self.population = self.newGeneration()
-            print(self.population)
-            print(len(self.population))
+            # print(self.population)
+            # print(len(self.population))
+        fitnessResult = {}
+        for i in range(len(self.population)):
+            #calculate fitness for all the chromosomes
+            fitnessResult[i] = self.calcFitness(self.population[i])
+        sortedFitness = sorted(fitnessResult.items(), key = operator.itemgetter(1), reverse=True)
+        fittest = 1/sortedFitness[0][1]
+        print("fitness", fittest)
+            
 
             
 

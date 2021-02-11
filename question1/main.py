@@ -25,5 +25,5 @@ def readForTSP(path):
     return nodelist
 
 data = readForTSP('question1\qa194.tsp')
-obj = TSP(data, 5, 2, 0.25, 2, 194, 5)
+obj = TSP(data, 30, 10, 0.5, 10, 194, 1000)
 obj.evolve()
