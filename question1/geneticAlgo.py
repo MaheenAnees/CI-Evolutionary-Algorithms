@@ -30,7 +30,7 @@ class GA:
     #swap randomly selected nodes in chromosome
     def mutate(self, chromosome):
         for node in chromosome:
-            if (random.random() < self.mutationRate):
+            if (random.random() <= self.mutationRate):
                 node2 = np.random.randint(0, self.dimension)
                 temp1 = chromosome[node]
                 temp2 = chromosome[node2]
@@ -77,11 +77,11 @@ class GA:
 
 
     def binaryTournament(self):
-        individual1 = self.population[np.random.randint(0, self.populationSize)] #randomly select the first chromosome
-        individual2 = self.population[np.random.randint(0, self.populationSize)] #randomly select the second chromosome
+        individual1 = self.population[np.random.randint(0, len(self.population))] #randomly select the first chromosome
+        individual2 = self.population[np.random.randint(0, len(self.population))] #randomly select the second chromosome
         fitness1 = self.calcFitness(individual1) #calculate fitness for the first chromosome
         fitness2 = self.calcFitness(individual2) #calculate fitness for the second chromosome
-        if (fitness1 > fitness2): #return the fittest individual
+        if (fitness1 >= fitness2): #return the fittest individual
             return individual1
         else:
             return individual2
@@ -155,7 +155,7 @@ class GA:
 
     def random(self):
         #randomly select the chromosome
-        return self.population[np.random.randint(0, self.populationSize)]
+        return self.population[np.random.randint(0, len(self.population))]
 
     #will run steps for each generation
     def newGeneration(self):
@@ -170,31 +170,41 @@ class GA:
         survivors = self.selection('truncate', self.populationSize)
         # print("Offsprings:", offsprings)
         # print("mutated:", mutatedPop)
-        # print("newPop",newPopulation)
-        # print("Survive", survivors)
+        # print("newPop", self.population[0])
+        print("Survive", len(survivors))
         return survivors
 
     #will run total generations
     def evolve(self):
-        Initial = {}
-        for i in range(len(self.population)):
-            #calculate fitness for all the chromosomes
-            Initial[i] = self.calcFitness(self.population[i])
-        sortedIni = sorted(Initial.items(), key = operator.itemgetter(1), reverse=True)
-        ini = 1/sortedIni[0][1]
-        print("Initial", ini)
+        # Initial = {}
+        # for i in range(len(self.population)):
+        #     #calculate fitness for all the chromosomes
+        #     Initial[i] = self.calcFitness(self.population[i])
+        # sortedIni = sorted(Initial.items(), key = operator.itemgetter(1), reverse=True)
+        # ini = 1/sortedIni[0][1]
+        # print("Initial", ini)
+
         for i in range(self.totalGenerations):
             print("Generation number:", i)
             self.population = self.newGeneration()
             # print(self.population)
-            # print(len(self.population))
-        fitnessResult = {}
-        for i in range(len(self.population)):
+            fitnessResult = {}
+            for i in range(len(self.population)):
             #calculate fitness for all the chromosomes
-            fitnessResult[i] = self.calcFitness(self.population[i])
-        sortedFitness = sorted(fitnessResult.items(), key = operator.itemgetter(1), reverse=True)
-        fittest = 1/sortedFitness[0][1]
-        print("fitness", fittest)
+                fitnessResult[i] = self.calcFitness(self.population[i])
+            sortedFitness = sorted(fitnessResult.items(), key = operator.itemgetter(1), reverse=True)
+            fittest = 1/sortedFitness[0][1]
+            print("fitness", fittest)
+            
+            # print(self.population)
+            # print(len(self.population))
+        # fitnessResult = {}
+        # for i in range(len(self.population)):
+        #     #calculate fitness for all the chromosomes
+        #     fitnessResult[i] = self.calcFitness(self.population[i])
+        # sortedFitness = sorted(fitnessResult.items(), key = operator.itemgetter(1), reverse=True)
+        # fittest = 1/sortedFitness[0][1]
+        # print("fitness", fittest)
             
 
             
