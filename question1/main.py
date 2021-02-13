@@ -17,13 +17,21 @@ def readForTSP(path):
     nodelist = []
     n = int(dimension)
     for i in range(0, n):
-        x,y = infile.readline().strip().split()[1:]
-        nodelist.append((float(x), float(y)))
+        node, x,y = infile.readline().strip().split()
+        nodelist.append([int(node),float(x), float(y)])
 
     # Close input file
     infile.close()
     return nodelist
 
+def readForKnpsack(path):
+    pass
+
 data = readForTSP('question1\qa194.tsp')
 obj = TSP(data, 30, 10, 0.5, 10, 194, 1000)
-obj.evolve()
+obj.geneticAlgorithm()
+
+
+# fitnessSoFar = []
+# obj.evolve()
+# obj.plotFitness()
