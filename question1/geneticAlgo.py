@@ -1,81 +1,3 @@
-#     #swap randomly selected nodes in chromosome
-#     # def mutate(self, chromosome):
-#     #     for node in chromosome:
-#     #         if (random.random() <= self.mutationRate):
-#     #             node2 = np.random.randint(0, self.dimension)
-#     #             temp1 = chromosome[node]
-#     #             temp2 = chromosome[node2]
-#     #             chromosome[node] = temp2
-#     #             chromosome[node2] = temp1
-#     #     return chromosome
-
-
-#     # def crossOver(self, parents):
-#     #     child=[]
-#     #     childA=[]
-#     #     childB=[]   
-#     #     geneA=int(random.random()* len(parents[0]))
-#     #     geneB=int(random.random()* len(parents[0]))
-        
-#     #     start = min(geneA,geneB)
-#     #     end = max(geneA,geneB)
-#     #     for i in range(start,end):
-#     #         childA.append(parents[0][i])    
-#     #     childB=[gene for gene in parents[1] if gene not in childA]
-#     #     child = childA + childB
-#     #     return child
-
-#     """
-#     #will run steps for each generation
-#     def newGeneration(self):
-#         offsprings = []
-#         mutatedPop = []
-#         for i in range(self.iterations):
-#             parents = self.selection('BT', 2)
-#             offsprings.append(self.crossOver(parents))
-#         for i in offsprings:
-#             mutatedPop.append(self.mutate(i))
-#         self.population += mutatedPop
-#         survivors = self.selection('truncate', self.populationSize)
-#         # print("Offsprings:", offsprings)
-#         # print("mutated:", mutatedPop)
-#         # print("newPop", self.population[0])
-#         print("Survive", len(survivors))
-#         return survivors
-
-#     #will run total generations
-#     def evolve(self):
-#         # Initial = {}
-#         # for i in range(len(self.population)):
-#         #     #calculate fitness for all the chromosomes
-#         #     Initial[i] = self.calcFitness(self.population[i])
-#         # sortedIni = sorted(Initial.items(), key = operator.itemgetter(1), reverse=True)
-#         # ini = 1/sortedIni[0][1]
-#         # print("Initial", ini)
-
-#         for i in range(self.totalGenerations):
-#             print("Generation number:", i)
-#             self.population = self.newGeneration()
-#             # print(self.population)
-#             fitnessResult = {}
-#             for i in range(len(self.population)):
-#             #calculate fitness for all the chromosomes
-#                 fitnessResult[i] = self.calcFitness(self.population[i])
-#             sortedFitness = sorted(fitnessResult.items(), key = operator.itemgetter(1), reverse=True)
-#             fittest = 1/sortedFitness[0][1]
-#             print("fitness", fittest)
-            
-#             # print(self.population)
-#             # print(len(self.population))
-#         # fitnessResult = {}
-#         # for i in range(len(self.population)):
-#         #     #calculate fitness for all the chromosomes
-#         #     fitnessResult[i] = self.calcFitness(self.population[i])
-#         # sortedFitness = sorted(fitnessResult.items(), key = operator.itemgetter(1), reverse=True)
-#         # fittest = 1/sortedFitness[0][1]
-#         # print("fitness", fittest)
-#         """
-
 import numpy as np, random, operator, math
 # import pandas as pd
 import matplotlib.pyplot as plt
@@ -86,10 +8,6 @@ class GA:
 
     def calcFitness(self, chromosome): #problem specific
         pass
-
-    @staticmethod
-    def takefitness(elem):
-        return elem[1]
 
     def binaryTournament(self):
         individual1 = self.population[np.random.randint(0, len(self.population))] #select the first random individual
@@ -110,11 +28,11 @@ class GA:
         for i in range(len(self.population)):
             #calculate fitness for all the chromosomes
             fitnessResult[i] = self.calcFitness(self.population[i])
-        fitnessSum = sum(i for i, j in fitnessResult.values())
+        fitnessSum = sum(fitnessResult.values())
         #divide each fitness value by the sum
         for i in range(len(self.population)):
             j = i - 1
-            fitnessResult[i] = fitnessResult[i][0] / fitnessSum
+            fitnessResult[i] = fitnessResult[i] / fitnessSum
             if (j >= 0):
                 #find the cumulative fitness for each
                 fitnessResult[i] += fitnessResult[j] 
@@ -163,57 +81,7 @@ class GA:
                     break
             selected.append(self.population[index])
         return selected
-# """
-#     def FPS(self, n):
-#         sel = []
-#         routeCMF = []
-#         sumFitness = 0
-#         # find fitness of each chromosome
-#         for i in range(len(self.population)):
-#             f = self.calcFitness(self.population[i])
-#             routeCMF.append([self.population[i], f])
-#             sumFitness += f
-#         # sort by fitness proportion
-#         routeCMF.sort(key=TSP.takefitness)
-#         # find fitness proportion of each chromosome and find CMF
-#         routeCMF[0][1] /= sumFitness
-#         for i in range(1,len(self.population)):
-#             routeCMF[i][1] /= sumFitness
-#             routeCMF[i][1] += routeCMF[i-1][1]
 
-#         while len(sel) != n:
-#             rdm = random.random()
-#             for i in range(len(self.population)):
-#                 if rdm <= routeCMF[i][1]:
-#                     if n == 2 or (n > 2 and routeCMF[i][0] not in sel):
-#                         sel.append(routeCMF[i][0])
-#         return sel
-
-#     def RBS(self, n):
-#         sel = []
-#         routeFitness = []
-#         sumRank = (self.dimension-1)*(self.dimension)/2
-#         # find fitness of each chromosome
-#         for i in range(len(self.population)):
-#             f = self.calcFitness(self.population[i])
-#             routeFitness.append([self.population[i], f])
-#         # sort by fitness proportion
-#         routeFitness.sort(key=TSP.takefitness)
-#         # find fitness proportion of each chromosome and find CMF
-#         routeFitness[0].append(1/sumRank)
-#         for i in range(1,len(self.population)):
-#             routeFitness[i].append((i+1)/sumRank)
-#             routeFitness[i][2] += routeFitness[i-1][2]
-#         while len(sel) != n:
-#             rdm = random.random()
-#             for i in range(len(self.population)):
-#                 if rdm <= routeFitness[i][2]:
-#                     if n == 2 or (n > 2 and routeFitness[i][0] not in sel):
-#                         sel.append(routeFitness[i][0])
-#                         # sel.append(routeFitness[i][0])
-#                         break
-#         return sel
-#     """
     def truncate(self, n): #returns top n fittest chromosomes 
         fitnessResult = {}
         for i in range(len(self.population)):
@@ -281,7 +149,7 @@ class GA:
     def nextGeneration(self): 
         children = []      
         for i in range(self.children//2):
-            parents = self.select("RBS", 2)
+            parents = self.select("BT", 2)
             children = self.crossOver(parents)
             children = self.mutatePopulation(children)
             self.population += children    
@@ -290,20 +158,20 @@ class GA:
     def rankRoutes(self):
         routeRank = {}
         for i in range(len(self.population)):
-            routeRank[i] = self.calcFitness(self.population[i])[0]        
+            routeRank[i] = self.calcFitness(self.population[i])     
         return sorted(routeRank.items(), key = operator.itemgetter(1), reverse=True)
     
     
     def geneticAlgorithm(self):
-        print("Initial distance: " + str(1/self.rankRoutes()[0][1]))  
+        self.print()  
         progress = []
-        progress.append(1/self.rankRoutes()[0][1])
+        progress.append(self.returnFitness())
         for i in range(0, self.totalGenerations):
             print("Generation:", i)
             self.nextGeneration()
-            progress.append(1/self.rankRoutes()[0][1])
+            progress.append(self.returnFitness())
             
-        print("Final distance: " + str(1/self.rankRoutes()[0][1]))
+        self.print() 
         bestRouteIds = self.rankRoutes()[0][0]
         # plt.plot(progress)
         # plt.ylabel('Distance')

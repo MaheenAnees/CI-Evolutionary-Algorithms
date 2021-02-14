@@ -11,20 +11,18 @@ class TSP(GA):
         self.iterations = iterations
         self.dimension = dimension
         self.totalGenerations = totalGenerations
-        self.max = math.inf
         self.population = self.initializePopulation()
          
     def initializePopulation(self):
         population = []
         for i in range(self.populationSize):
-            individual = []
-            while(len(individual) < self.dimension):
-                node = random.randint(0 , self.dimension - 1)
-                if self.data[node] not in individual:
-                    individual.append(self.data[node])
-            population.append(individual)
+            population.append(self.createChromosome())
         return population
     
+    def createChromosome(self):
+        order = set(np.arange(self.dimension, dtype=int))
+        individual = list(random.sample(order, self.dimension))    
+        return individual
 
     def findDistance(self, node1, node2):
         return np.sqrt((node1[1]-node2[1])**2 + (node1[2]-node2[2])**2)
@@ -34,8 +32,14 @@ class TSP(GA):
         for i in range(1, len(chromosome)):
             node1 = chromosome[i-1]
             node2 = chromosome[i]
-            fitness = fitness + self.findDistance(node1, node2)
-        return (1/fitness , -1)
+            fitness = fitness + self.findDistance(self.data[node1], self.data[node2])
+        return 1/fitness
+    
+    def print(self):
+        print("Distance: " + str(1/self.rankRoutes()[0][1]))
+    
+    def returnFitness(self):
+        return 1/self.rankRoutes()[0][1]
 
 
 
